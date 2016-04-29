@@ -37,7 +37,11 @@ Escolhemos os seguintes benchmarks para serem avaliados:
 
 **Branch Predictor**:
 
+<<<<<<< HEAD
 Iremos fixar os parâmetros passados e adotaremos duas estratégias de branch Predictor
+=======
+- Iremos fixar os parâmetros passados e adotaremos duas estratégias de branch Predictor
+>>>>>>> 8f7be0f374948eea80f082253a2cf21ca2d98b10
 
 
 1. Assumiremos que o desvio sempre ocorrerá
