@@ -52,8 +52,6 @@ E para os hazards de controle, iremos analisar o atraso que uma instrução de *
 
 Iremos fixar os parâmetros passados e adotaremos duas estratégias de branch Predictor
 
-- Iremos fixar os parâmetros passados e adotaremos três estratégias de branch Predictor
-
 1. Assumiremos que o desvio sempre ocorrerá
 2. O desvio nunca ocorrerá
 3. Sem implementação alguma de Branch Predictor
