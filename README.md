@@ -32,20 +32,28 @@ Escolhemos os seguintes benchmarks para serem avaliados:
 
 **Hazard de dados e controle**:
 
-- Para a contagem dos Hazard utilizaremos a mesma estratégia do pipeline
-- Faremos mudanças nas instruções do simulador para armazenar as instruções executadas e avaliar quando um hazard acontece
+- Para a contagem dos Hazard utilizaremos a mesma estratégia do pipeline. Vamos utilizar um pipeline de 5 estágios.
+- Faremos mudanças nas instruções do simulador para armazenar as instruções executadas e avaliar quando um hazard acontece.
+
+Vamos avaliar os seguintes hazards de dados:
+
+* read after write (RAW), a true dependency
+* write after read (WAR), an anti-dependency
+* write after write (WAW), an output dependency
+
+E para os hazards de controle, iremos analisar o atraso que uma instrução de branch tem no pipeline.
+
 
 **Branch Predictor**:
 
-<<<<<<< HEAD
 Iremos fixar os parâmetros passados e adotaremos duas estratégias de branch Predictor
-=======
-- Iremos fixar os parâmetros passados e adotaremos duas estratégias de branch Predictor
->>>>>>> 8f7be0f374948eea80f082253a2cf21ca2d98b10
 
+- Iremos fixar os parâmetros passados e adotaremos três estratégias de branch Predictor
 
 1. Assumiremos que o desvio sempre ocorrerá
 2. O desvio nunca ocorrerá
+3. Sem implementação alguma de Branch Predictor
+
 
 Para ambos os casos vamos manter um histórico das instruções e sempre que fomos executar uma instrução de branch, vamos verificar qual a próxima instrução que o simulador vai rodar e se ela está de acordo com a predição. Caso não esteja, iremos contabilizar os stalls.
 
