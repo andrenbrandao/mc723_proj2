@@ -61,7 +61,6 @@ std::ofstream dineroTraceOutputFile;
 
 enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
 
-
 void writeTofile(DINERO_TYPE type, int address){
 	dineroTraceOutputFile << type << " " << std::hex << address << endl;
 }
@@ -73,7 +72,7 @@ void ac_behavior(begin)
   dbg_printf("@@@ begin behavior @@@\n");
   //Apaga o conteúdo do arquivo
   
-  dineroTraceOutputFile.open("dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
+  dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
   
   RB[0] = 0;
   npc = ac_pc + 4;
@@ -116,6 +115,8 @@ void ac_behavior( lbu )
   byte = DM.read_byte(RB[rs]+ imm);
   RB[rt] = byte ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  writeTofile(READ, RB[rs]+ imm);
+
 };
 
 //!Instruction lh behavior method.
@@ -126,6 +127,8 @@ void ac_behavior( lh )
   half = DM.read_half(RB[rs]+ imm);
   RB[rt] = (ac_Sword)half ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  writeTofile(READ, RB[rs]+ imm);
+
 };
 
 //!Instruction lhu behavior method.
@@ -135,6 +138,7 @@ void ac_behavior( lhu )
   half = DM.read_half(RB[rs]+ imm);
   RB[rt] = half ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  writeTofile(READ, RB[rs]+ imm);
 };
 
 //!Instruction lw behavior method.
@@ -160,6 +164,8 @@ void ac_behavior( lwl )
   data |= RB[rt] & ((1<<offset)-1);
   RB[rt] = data;
   dbg_printf("Result = %#x\n", RB[rt]);
+  writeTofile(READ, addr & 0xFFFFFFFC);
+
 };
 
 //!Instruction lwr behavior method.
@@ -176,6 +182,7 @@ void ac_behavior( lwr )
   data |= RB[rt] & (0xFFFFFFFF << (32-offset));
   RB[rt] = data;
   dbg_printf("Result = %#x\n", RB[rt]);
+  writeTofile(READ, addr & 0xFFFFFFFC);
 };
 
 //!Instruction sb behavior method.
@@ -186,6 +193,7 @@ void ac_behavior( sb )
   byte = RB[rt] & 0xFF;
   DM.write_byte(RB[rs] + imm, byte);
   dbg_printf("Result = %#x\n", (int) byte);
+  writeTofile(WRITE, RB[rs] + imm);
 };
 
 //!Instruction sh behavior method.
@@ -196,6 +204,7 @@ void ac_behavior( sh )
   half = RB[rt] & 0xFFFF;
   DM.write_half(RB[rs] + imm, half);
   dbg_printf("Result = %#x\n", (int) half);
+  writeTofile(WRITE, RB[rs] + imm);
 };
 
 //!Instruction sw behavior method.
@@ -204,6 +213,7 @@ void ac_behavior( sw )
   dbg_printf("sw r%d, %d(r%d)\n", rt, imm & 0xFFFF, rs);
   DM.write(RB[rs] + imm, RB[rt]);
   dbg_printf("Result = %#x\n", RB[rt]);
+  writeTofile(WRITE, RB[rs] + imm);
 };
 
 //!Instruction swl behavior method.
@@ -220,6 +230,7 @@ void ac_behavior( swl )
   data |= DM.read(addr & 0xFFFFFFFC) & (0xFFFFFFFF << (32-offset));
   DM.write(addr & 0xFFFFFFFC, data);
   dbg_printf("Result = %#x\n", data);
+  writeTofile(WRITE, addr & 0xFFFFFFFC);
 };
 
 //!Instruction swr behavior method.
@@ -236,6 +247,7 @@ void ac_behavior( swr )
   data |= DM.read(addr & 0xFFFFFFFC) & ((1<<offset)-1);
   DM.write(addr & 0xFFFFFFFC, data);
   dbg_printf("Result = %#x\n", data);
+  writeTofile(WRITE, addr & 0xFFFFFFFC);
 };
 
 //!Instruction addi behavior method.
@@ -636,7 +648,7 @@ void ac_behavior( beq )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction bne behavior method.
