@@ -18,6 +18,7 @@ Escolhemos os seguintes benchmarks para serem avaliados:
 - **Qsort**: por ser um programa simples, pequeno e fácil de ser modificado
 - **Lame**: usa uma boa capacidade de processamento e memória
 - **Sha**: usa muitas expressões aritméticas
+- **FFt**: uso intenso de processador
 
 ### Estratégia
 
