@@ -74,6 +74,7 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
       stalls++;
   }
   else {
+    // RAW hazard
     // Compare first pair with the first from the 2nd pair
     if(history[1].type == LD && (a.r2 == history[1].r1 || a.r3 == history[1].r1) ||
        history[2].type == LD && (a.r2 == history[2].r1 || a.r3 == history[2].r1))
@@ -92,6 +93,16 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
     // Check only between pairs
     else if(history[3].type == LD && (a.r2 == history[3].r1 || a.r3 == history[3].r1))
       stalls += 2;
+
+    // WAR hazard
+    if(history[3].type == WR && (a.r1 == history[3].r2 || a.r1 == history[3].r3)) {
+      stalls++;
+    }
+
+    // WAW hazard
+    if(history[3].type == WR && a.r1 == history[3].r1) {
+      stalls++;
+    }
   }
 }
 
