@@ -53,6 +53,7 @@ std::vector <inst_hist_t> history;
 
 enum inst_type {LD, WR, OTHER};
 
+int superscalar = 1;
 int stalls = 0;
 
 void saveInstruction(inst_type type, int r1, int r2, int r3) {
@@ -67,8 +68,31 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
     history.erase(history.begin());
   }
 
-  if(history[3].type == LD && (a.r2 == history[3].r1 || a.r3 == history[3].r1))
-    stalls++;
+  // Check for scalar
+  if(!superscalar) {
+    if(history[3].type == LD && (a.r2 == history[3].r1 || a.r3 == history[3].r1))
+      stalls++;
+  }
+  else {
+    // Compare first pair with the first from the 2nd pair
+    if(history[1].type == LD && (a.r2 == history[1].r1 || a.r3 == history[1].r1) ||
+       history[2].type == LD && (a.r2 == history[2].r1 || a.r3 == history[2].r1))
+          stalls++;
+
+    // Compare first pair with the second from the 2nd pair
+    else if(history[1].type == LD && (history[3].r2 == history[1].r1 || history[3].r3 == history[1].r1) ||
+            history[2].type == LD && (history[3].r2 == history[2].r1 || history[3].r3 == history[2].r1)) 
+    {
+      stalls++;
+
+      // Check between pairs
+      if(history[3].type == LD && (a.r2 == history[3].r1 || a.r3 == history[3].r1))
+        stalls++;
+    }
+    // Check only between pairs
+    else if(history[3].type == LD && (a.r2 == history[3].r1 || a.r3 == history[3].r1))
+      stalls += 2;
+  }
 }
 
 //!Generic instruction behavior method.
@@ -92,7 +116,7 @@ std::ofstream dineroTraceOutputFile;
 enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
 
 void writeTofile(DINERO_TYPE type, int address){
-	dineroTraceOutputFile << type << " " << std::hex << address << endl;
+  dineroTraceOutputFile << type << " " << std::hex << address << endl;
 }
 
 
@@ -123,6 +147,9 @@ void ac_behavior(end)
 {
   dbg_printf("@@@ end behavior @@@\n");
   dineroTraceOutputFile.close();
+
+  if(superscalar)
+    stalls = stalls/2;
   printf("----- Number of stalls: %d", stalls);
 }
 
@@ -345,7 +372,7 @@ void ac_behavior( sltiu )
 
 //!Instruction andi behavior method.
 void ac_behavior( andi )
-{	
+{ 
   dbg_printf("andi r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] & (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -354,7 +381,7 @@ void ac_behavior( andi )
 
 //!Instruction ori behavior method.
 void ac_behavior( ori )
-{	
+{ 
   dbg_printf("ori r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] | (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -363,7 +390,7 @@ void ac_behavior( ori )
 
 //!Instruction xori behavior method.
 void ac_behavior( xori )
-{	
+{ 
   dbg_printf("xori r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] ^ (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -372,7 +399,7 @@ void ac_behavior( xori )
 
 //!Instruction lui behavior method.
 void ac_behavior( lui )
-{	
+{ 
   dbg_printf("lui r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   // Load a constant in the upper 16 bits of a register
   // To achieve the desired behaviour, the constant was shifted 16 bits left
@@ -428,7 +455,7 @@ void ac_behavior( subu )
 
 //!Instruction slt behavior method.
 void ac_behavior( slt )
-{	
+{ 
   dbg_printf("slt r%d, r%d, r%d\n", rd, rs, rt);
   // Set the RD if RS< RT
   if( (ac_Sword) RB[rs] < (ac_Sword) RB[rt] )
@@ -674,12 +701,12 @@ void ac_behavior( jal )
   // jump to the address given by PC(31...28)||(addr<<2)
   // It must also flush the instructions that were loaded into the pipeline
   RB[Ra] = ac_pc+4; //ac_pc is pc+4, we need pc+8
-	
+  
   addr = addr << 2;
 #ifndef NO_NEED_PC_UPDATE
   npc = (ac_pc & 0xF0000000) | addr;
 #endif 
-	
+  
   dbg_printf("Target = %#x\n", (ac_pc & 0xF0000000) | addr );
   dbg_printf("Return = %#x\n", ac_pc+4);
   saveInstruction(OTHER, 0, 0, 0);
@@ -732,14 +759,14 @@ void ac_behavior( beq )
 
 //!Instruction bne behavior method.
 void ac_behavior( bne )
-{	
+{ 
   dbg_printf("bne r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   if( RB[rs] != RB[rt] ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -752,7 +779,7 @@ void ac_behavior( blez )
     npc = ac_pc + (imm<<2), 1;
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -765,7 +792,7 @@ void ac_behavior( bgtz )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -778,7 +805,7 @@ void ac_behavior( bltz )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -791,7 +818,7 @@ void ac_behavior( bgez )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -805,7 +832,7 @@ void ac_behavior( bltzal )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   dbg_printf("Return = %#x\n", ac_pc+4);
   saveInstruction(OTHER, 0, 0, 0);
 };
@@ -820,7 +847,7 @@ void ac_behavior( bgezal )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  } 
   dbg_printf("Return = %#x\n", ac_pc+4);
   saveInstruction(OTHER, 0, 0, 0);
 };
