@@ -95,12 +95,12 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
       stalls += 2;
 
     // WAR hazard
-    if(history[3].type == WR && (a.r1 == history[3].r2 || a.r1 == history[3].r3)) {
+    if(a.type == WR && (a.r1 == history[3].r2 || a.r1 == history[3].r3)) {
       stalls++;
     }
 
     // WAW hazard
-    if(history[3].type == WR && a.r1 == history[3].r1) {
+    if(a.type == WR && history[3].type == WR && a.r1 == history[3].r1) {
       stalls++;
     }
   }
