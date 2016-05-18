@@ -1,5 +1,4 @@
-# MC723 - Projeto 2
-
+# MC723 - Projeto 2 - Grupo 2
 ## Integrantes:
 
 | Nome|RA|
@@ -9,73 +8,129 @@
 |Renan Camargo de Castro| 147775|
 |Gustavo Rodrigues Basso| 105046|
 
-## Roteiro:
+## Configurações Arquiqueturais:
 
-Avaliaremos o impacto, no desempenho de um processador, de várias características arquiteturais estudadas na disciplina teórica.
+ - Tamanho do pipeline: 5 estágios
+ - Cache:
+    - As configurações de cache foram escolhidas com base nos resultados coletados no exercicio de numero 2. As melhores configurações foram:
+    - **C1**: L1 - Size: 128K, Block Size: 128B; L2 - Size: 1024K, Block Size: 128B.
+    - **C2**: L1 - Size: 64K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.
+    - **C3**: L1 - Size: 128K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.
+    - **C4**: L1 - Size: 64K, Block Size: 128B; L2 - Size: 1024K, Block Size: 128B.
 
-Escolhemos os seguintes benchmarks para serem avaliados:
+## Medidas de Desempenho:
+Medimos o impacto, no desempenho de um processador, de diferentes características através das seguintes métricas:
+ - **Tamanho do Pipeline:** Calculo do número de ciclos executados para diferentes tamanhos de pipeline (sem pipeline, 5 estagios, 7 estagio e 13 estagios)
+ - **Processador escalar vs. Superescalar:** 
+    - Contagem do número total de ciclos executados em cada processador;
+    - Contagem do números de ciclos de stalls para cada processador.
+ - **Hazard de Dados e Controle:**
+    - Identificação dos estagios em que ocorrem Hazards; 
+    - Hazard de Dados: Contagem do número de stalls quando um hazard de controle ocorre (brench predictor falha) para os seguintes casos:
+        - Read after Write - analise de processador escalar vs superescalar
+        - write after read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
+        - Write after write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
+    - Hazard de Controle: Será analisado no ponto seguinte, de Branch de Controle.
+ - **Branch Predictor:** Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão. Sera analisado para cada uma das seguintes estratégias de branch predictor:
+    - Always Taken: o desvio é sempre tomado
+    - Never Taken: o desvio nunca é tomado
+    - Sem Branch Predictor
+ - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior.
+ 
+ Para realizar as medidas foram necessarios fixar parâmetros. OS parametros que foram fixados estarão decritos em cada seção.
+## Resultados Obtidos:
+### Tamanho do Pipeline
 
-- **Qsort**: por ser um programa simples, pequeno e fácil de ser modificado
-- **Lame**: usa uma boa capacidade de processamento e memória
-- **Sha**: usa muitas expressões aritméticas
-- **FFt**: uso intenso de processador
+| |**Sem Pipeline**|**5 estágios**|**7 estágios**|**13 estágios**|
+|---|---|---|---|---|
+|**QSort** |||||
+|**Lame** |||||
+|**Sha**|||||
+|**FFT**|||||
 
-### Estratégia
+- Analise:
 
-**Tamanho do pipeline**:
+### Processadorescalar vs Superescalar:
+- Parâmetros Fixos:
+    - Tamanho da pipeline: 5 estágios
+    - Número de instruções por ciclo de clock do processador superescalar: 2.
+- Contagem do número total de ciclos executados em cada processador:
 
-- Primeiro mediremos os ciclos sem pipeline
-- Como o simulador MIPS não fornece uma implementação de pipeline, modificaremos o código para contar os ciclos supondo a existência de pipeline de 5, 7 e 13 estágios
+| |**Processador Escalar**|**Processador Superescalar**|
+|---|---|---|
+|**QSort** |||
+|**Lame** |||
+|**Sha**|||
+|**FFT**|||
 
-**Processador escalar vs superescalar**:
+- Contagem do números de ciclos de stalls para cada processador:
 
-- Definido um tamanho de pipeline, vamos manter o histórico das instruções e analisar as novas instruções 2 a 2
-- Caso haja dependẽncia de alguma delas com alguma instrução que está no "pipeline", contabilizamos a quantidade de ciclos de stall necessários para resolver o problema de acordo com o tamanho do pipeline
+| |**Processador Escalar**|**Processador Superescalar**|
+|---|---|---|
+|**QSort** |||
+|**Lame** |||
+|**Sha**|||
+|**FFT**|||
 
-**Hazard de dados e controle**:
+- Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teorico, esperado para o número total de ciclos executados é:
+    - Processador escalar: n + 5 + # de ciclos de stall 
+    - Processador supesescalar: n/2 + 5 + # de ciclos de stall
 
-- Para a contagem dos Hazard utilizaremos a mesma estratégia do pipeline. Vamos utilizar um pipeline de 5 estágios.
-- Faremos mudanças nas instruções do simulador para armazenar as instruções executadas e avaliar quando um hazard acontece.
+### Hazard de Dados e Controle
+- Parâmetros Fixos:
+    - Tamanho da pipeline: 5 estágios. 
+- Identificação dos estagios em que ocorrem Hazards:
+    - Hazards acontecem somente em processadores escalares, no estagio memoria/registrador. Os demais casos de hazard identificados podem ser resolvidos através de *pipeline fowarding*.
+- Contagem do número de stalls quando um hazard de controle ocorre (brench predictor falha).
+    -  Read after Write
 
-Vamos avaliar os seguintes hazards de dados(considerando i1 uma instrução que ocorre antes de i2 na):
+        | |**Processador Escalar**|**Processador Superescalar**|
+        |---|---|---|
+        |**QSort** |||
+        |**Lame** |||
+        |**Sha**|||
+        |**FFT**|||
 
-* read after write (RAW), nesse caso, a instrução i2 tenta acessar uma informação escrita por i1. Existe uma dependência entra a saída de i1 e a entrada de i2. Ex: (i1,i2) - **R2** <- R1 + R3, R4 <- **R2** + R3. - *Será analisada para os tipos **escalar/superescalar**.*
-* write after read (WAR), nesse caso, i2 tenta escrever em um local, antes de ser lido por i1. Ex: (i1,i2) - R4 <- R1 + **R5**, **R5** <- R1 + R2. - *Será analisada para o tipo **superescalar**, pois só acontece com concorrência.*
-* write after write (WAW), i2 tenta escrever no mesmo lugar de i1. Ex: (i1,i2) - **R2** <- R4 + R7, **R2** <- R1 + R3. - *Será analisada para o tipo **superescalar**, pois só acontece com concorrência.*
+    - Write after Read
+    
+        | |**Processador Superescalar**|
+        |---|---|
+        |**QSort** ||
+        |**Lame** ||
+        |**Sha**||
+        |**FFT**||
 
-Para os tipos que podem ser resolvidos com forwarding, vamos considerá-los resolvidos.
+    - Write after Write
+    
+        | |**Processador Superescalar**|
+        |---|---|
+        |**QSort** ||
+        |**Lame** ||
+        |**Sha**||
+        |**FFT**||
 
+- Analise:
 
-E para os hazards de controle, iremos analisar o atraso que uma instrução de **branch** tem no pipeline.
+### Branch Predictor:
+- Parâmetros Fixos:
+    - Tamanho da pipeline: 5 estágios;
+    - Processador Escalar;
+    - Sem Hazard de Dados.
+ - Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
+ 
+    | |**Always Taken**|**Never Taken**|**Sem Branch Predictor**|
+    |---|---|---|---|
+    |**QSort** ||||
+    |**Lame** ||||
+    |**Sha**||||
+    |**FFT**||||
 
+- Analise: 
 
-**Branch Predictor**:
-
-Iremos fixar os parâmetros passados e adotaremos duas estratégias de branch Predictor
-
-1. Assumiremos que o desvio sempre ocorrerá
-2. O desvio nunca ocorrerá
-3. Sem implementação alguma de Branch Predictor
-
-
-Para ambos os casos vamos manter um histórico das instruções e sempre que fomos executar uma instrução de branch, vamos verificar qual a próxima instrução que o simulador vai rodar e se ela está de acordo com a predição. Caso não esteja, iremos contabilizar os stalls.
-
-
-**Cache**:
-
-Iremos salvar um trace da execução do simulador para poder avaliar no software Dinero.
-
-Vamos avaliar as melhores 4 configurações para cada benchmark se baseando no laboratório anterior:
-
-* L1 - Size: **128K**, Block Size: 128B; L2 - Size: **1024K**, Block Size: 128B.
-* L1 - Size: **64K**, Block Size: 128B; L2 - Size: **2048K**, Block Size: 128B.
-* L1 - Size: **128K**, Block Size: 128B; L2 - Size: **2048K**, Block Size: 128B.
-* L1 - Size: **64K**, Block Size: 128B; L2 - Size: **1024K**, Block Size: 128B.
-
-
-### Planejamento
-
-
-1. Implementar o pipeline e o processador superescalar - até dia 06/05
-2. Hazard e Branch predictor - até dia 13/05
-3. Cache e finalização do relatório - até dia 19/05  
+### Cache:
+- Parâmetros Fixos:
+    - Tamanho da pipeline: 5 estágios. 
+- C1:
+- C2:
+- C3:
+- C4:
