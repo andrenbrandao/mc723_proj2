@@ -1,0 +1,19 @@
+QSORT
+
+----- Configurations -----
+Pipeline size: 5
+Superscalar: false
+Branch predictor: None
+
+
+----- Results -----
+Cycles: 37852792
+Instructions: 30455058
+Stalls: 7397734
+-- Data: 4650463
+-- Branch: 2747271
+CPI: 1.24
+
+Branch calls: 2747271
+Branch correct: 2052526
+

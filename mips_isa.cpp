@@ -55,7 +55,7 @@ std::vector <inst_hist_t> history;
 enum inst_type {LD, WR, BR, OTHER};
 
 // Branch prediction types
-enum branch_pred_type {BTFNT, NOT_TAKEN, NONE}
+enum branch_pred_type {BTFNT, NOT_TAKEN, NONE};
 
 /*
  * CONFIGURATIONS
@@ -108,7 +108,7 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
 			stalls++;
 		// load followed by a branch testing the result
 		if(history[3].type == LD && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
-			stalls+=2;	
+			stalls+=2;
 	}
   }
   else {
@@ -172,11 +172,18 @@ void countBranchStalls(bool resultBranch, int npc, int cpc){
 	}
 }
 
+std::ofstream dineroTraceOutputFile;
+enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
+
+void writeTofile(DINERO_TYPE type, int address){
+  dineroTraceOutputFile << type << " " << std::hex << address << endl;
+}
+
 void init(){
-    dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
+	dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
 	instructions = 0;
 	stalls = 0;
-	branch_stalls = 0
+	branch_stalls = 0;
 	branch_calls = 0;
 	branch_correct = 0;
 }
@@ -205,28 +212,24 @@ void print_result(){
   printf("\n\n----- Results -----\n");
   
   if(superscalar)
-    stalls = stalls/2;	
+    stalls = stalls/2;
   
   int total_stalls = stalls + branch_stalls;
   int total_cycles = instructions + total_stalls;
+  float cpi = total_cycles / (float) instructions;
   
   printf("Cycles: %d\n", total_cycles);
   printf("Instructions: %d\n", instructions);
   printf("Stalls: %d\n", total_stalls);
-  printf("-- Data: %d", stalls);
-  printf("-- Branch: %d", branch_stalls);
-  printf("CPI: %2.f", (float) total_cycles / instructions);
+  printf("-- Data: %d\n", stalls);
+  printf("-- Branch: %d\n", branch_stalls);
+  printf("CPI: %.2f\n", cpi);
   
   printf("\n");
-  printf("Branch calls: %d", branch_calls);
-  printf("Branch correct: %d", branch_correct);
-}
-
-std::ofstream dineroTraceOutputFile;
-enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
-
-void writeTofile(DINERO_TYPE type, int address){
-  dineroTraceOutputFile << type << " " << std::hex << address << endl;
+  printf("Branch calls: %d\n", branch_calls);
+  printf("Branch correct: %d\n", branch_correct);
+  
+  printf("\n\n\n");
 }
 
 //!Generic instruction behavior method.

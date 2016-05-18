@@ -1,0 +1,15 @@
+
+-- compile
+
+acsim mips.ac -abi
+make -f Makefile.archc
+
+-- copy
+
+cp mips_isa.cpp test-mips/
+
+-- run
+./mips.x --load=../programs/qsort/qsort_small.mips ../programs/qsort/input_small.dat 
+
+
+
