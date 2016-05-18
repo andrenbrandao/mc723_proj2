@@ -64,7 +64,7 @@ enum branch_pred_type {BTFNT, NOT_TAKEN, NONE}
  * - super scalar
  */
 int pipeline_size = 5;
-int superscalar = 1;
+int superscalar = 0;
 branch_pred_type predictor = NONE;
 
 /*
@@ -172,6 +172,14 @@ void countBranchStalls(bool resultBranch, int npc, int cpc){
 	}
 }
 
+void init(){
+    dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
+	instructions = 0;
+	stalls = 0;
+	branch_stalls = 0
+	branch_calls = 0;
+	branch_correct = 0;
+}
 
 void print_config(){
   
@@ -219,15 +227,6 @@ enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
 
 void writeTofile(DINERO_TYPE type, int address){
   dineroTraceOutputFile << type << " " << std::hex << address << endl;
-}
-
-void init(){
-    dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
-	instructions = 0;
-	stalls = 0;
-	branch_stalls = 0
-	branch_calls = 0;
-	branch_correct = 0;
 }
 
 //!Generic instruction behavior method.
