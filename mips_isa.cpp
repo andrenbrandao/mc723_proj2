@@ -51,18 +51,39 @@ typedef struct inst_hist_t {
 } inst_hist_t;
 std::vector <inst_hist_t> history;
 
-enum inst_type {LD, WR, OTHER};
-
+// Instruction types
+enum inst_type {LD, WR, BR, OTHER};
 
 // Branch prediction types
-enum branch_pred_type { BTFNT, NOT_TAKEN, NONE }
+enum branch_pred_type {BTFNT, NOT_TAKEN, NONE}
 
-branch_pred_type predictor = NOT_TAKEN;
-
+/*
+ * CONFIGURATIONS
+ * - pipeline size
+ * - branch predictor type
+ * - super scalar
+ */
+int pipeline_size = 5;
 int superscalar = 1;
+branch_pred_type predictor = NONE;
+
+/*
+ * COUNTERS
+ * - data_stalls
+ * - branch_stalls
+ * - branch_calls
+ * - branch_correct
+ */
+int instructions = 0;
 int stalls = 0;
+int branch_stalls = 0;
+int branch_calls = 0;
+int branch_correct = 0;
 
 void saveInstruction(inst_type type, int r1, int r2, int r3) {
+  
+  instructions++;
+	
   inst_hist_t a;
   a.r1 = r1;
   a.r2 = r2;
@@ -70,7 +91,7 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
   a.type = type;
   history.push_back(a);
 
-  if(history.size() > 5) {
+  if(history.size() > pipeline_size) {
     history.erase(history.begin());
   }
 
@@ -78,6 +99,17 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
   if(!superscalar) {
     if(history[3].type == LD && (a.r2 == history[3].r1 || a.r3 == history[3].r1))
       stalls++;
+      
+    // Control Hazard
+    // Consequecence of early evaluation of the branch decision in ID stage
+    if(a.type == BR){
+		// write followed by a branch testing the result
+		if(history[3].type == WR && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
+			stalls++;
+		// load followed by a branch testing the result
+		if(history[3].type == LD && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
+			stalls+=2;	
+	}
   }
   else {
     // RAW hazard
@@ -108,22 +140,7 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
     // WAW hazard
     if(a.type == WR && history[3].type == WR && a.r1 == history[3].r1) {
       stalls++;
-    }
-    
-    // Control Hazard
-    // Consequecence of early evaluation of the branch decision in ID stage
-    if(a.type == BR){
-		
-		// write followed by a branch testing the result
-		if(history[3].type == WR && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
-			stalls++;
-		
-		// load followed by a branch testing the result
-		if(history[3].type == LD && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
-			stalls+=2;	
-	}
-		
-		
+    }	
   }
 }
 
@@ -135,19 +152,82 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
  * cpc: current pc
   */
 void countBranchStalls(bool resultBranch, int npc, int cpc){
+	
+	branch_calls++;
+	if(resultBranch)
+		branch_correct++;
+	
 	if(predictor == NOT_TAKEN && resultBranch == true){
-		stalls++; // with fowarding and more hardware changes
+		branch_stalls++; // with fowarding and more hardware changes
 	}else if(predictor == NONE){
-		stalls++; // with fowarding and more hardware changes
+		branch_stalls++; // with fowarding and more hardware changes
 	}else if(predictor == BTFNT){
 		// backward branch and not taken
 		if(npc < cpc && resultBranch == false){
-			stalls++;
+			branch_stalls++;
 		// foward branch and taken
 		}else if(npc > cpc && resultBranch == true){
-			stalls++;
+			branch_stalls++;
 		}
 	}
+}
+
+
+void print_config(){
+  
+  printf("\n\n----- Configurations -----\n");
+  
+  printf("Pipeline size: %d\n", pipeline_size);  
+  
+  printf("Superscalar: ");  
+  if(superscalar) printf("true\n");  
+  else printf("false\n");  
+  
+  printf("Branch predictor: ");  
+  if(predictor == BTFNT)
+	printf("BTFNT\n");
+  else if(predictor == NOT_TAKEN)
+    printf("Always not taken\n");
+  else
+    printf("None\n");
+  
+}
+
+void print_result(){
+  printf("\n\n----- Results -----\n");
+  
+  if(superscalar)
+    stalls = stalls/2;	
+  
+  int total_stalls = stalls + branch_stalls;
+  int total_cycles = instructions + total_stalls;
+  
+  printf("Cycles: %d\n", total_cycles);
+  printf("Instructions: %d\n", instructions);
+  printf("Stalls: %d\n", total_stalls);
+  printf("-- Data: %d", stalls);
+  printf("-- Branch: %d", branch_stalls);
+  printf("CPI: %2.f", (float) total_cycles / instructions);
+  
+  printf("\n");
+  printf("Branch calls: %d", branch_calls);
+  printf("Branch correct: %d", branch_correct);
+}
+
+std::ofstream dineroTraceOutputFile;
+enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
+
+void writeTofile(DINERO_TYPE type, int address){
+  dineroTraceOutputFile << type << " " << std::hex << address << endl;
+}
+
+void init(){
+    dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
+	instructions = 0;
+	stalls = 0;
+	branch_stalls = 0
+	branch_calls = 0;
+	branch_correct = 0;
 }
 
 //!Generic instruction behavior method.
@@ -166,23 +246,12 @@ void ac_behavior( Type_R ){}
 void ac_behavior( Type_I ){}
 void ac_behavior( Type_J ){}
  
-std::ofstream dineroTraceOutputFile;
-
-enum DINERO_TYPE { READ, WRITE, INSTRUCTION_FETCH };
-
-void writeTofile(DINERO_TYPE type, int address){
-  dineroTraceOutputFile << type << " " << std::hex << address << endl;
-}
-
-
 //!Behavior called before starting simulation
 void ac_behavior(begin)
 {
+  init();
+	
   dbg_printf("@@@ begin behavior @@@\n");
-  //Apaga o conteúdo do arquivo
-  
-  dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
-  
   RB[0] = 0;
   npc = ac_pc + 4;
 
@@ -202,12 +271,10 @@ void ac_behavior(end)
 {
   dbg_printf("@@@ end behavior @@@\n");
   dineroTraceOutputFile.close();
-
-  if(superscalar)
-    stalls = stalls/2;
-  printf("----- Number of stalls: %d", stalls);
+  
+  print_config();
+  print_result();
 }
-
 
 //!Instruction lb behavior method.
 void ac_behavior( lb )
@@ -813,7 +880,7 @@ void ac_behavior( beq )
 	  countBranchStalls(false, npc, ac_pc);
   }
   
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction bne behavior method.
@@ -829,7 +896,7 @@ void ac_behavior( bne )
   }else{
 	  countBranchStalls(false, npc, ac_pc);
   }
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction blez behavior method.
@@ -845,7 +912,7 @@ void ac_behavior( blez )
   }else{
 	  countBranchStalls(false, npc, ac_pc);
   }
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction bgtz behavior method.
@@ -861,7 +928,7 @@ void ac_behavior( bgtz )
   }else{
 	  countBranchStalls(false, npc, ac_pc);
   }
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction bltz behavior method.
@@ -877,7 +944,7 @@ void ac_behavior( bltz )
   }else{
 	  countBranchStalls(false, npc, ac_pc);
   }
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction bgez behavior method.
@@ -893,7 +960,7 @@ void ac_behavior( bgez )
   }else{
 	  countBranchStalls(false, npc, ac_pc);
   }
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction bltzal behavior method.
@@ -911,7 +978,7 @@ void ac_behavior( bltzal )
 	  countBranchStalls(false, npc, ac_pc);
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction bgezal behavior method.
@@ -929,7 +996,7 @@ void ac_behavior( bgezal )
 	  countBranchStalls(false, npc, ac_pc);
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
-  saveInstruction(OTHER, 0, 0, 0);
+  saveInstruction(BR, 0, 0, 0);
 };
 
 //!Instruction sys_call behavior method.
