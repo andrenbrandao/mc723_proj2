@@ -53,6 +53,12 @@ std::vector <inst_hist_t> history;
 
 enum inst_type {LD, WR, OTHER};
 
+
+// Branch prediction types
+enum branch_pred_type { BTFNT, NOT_TAKEN, NONE }
+
+branch_pred_type predictor = NOT_TAKEN;
+
 int superscalar = 1;
 int stalls = 0;
 
@@ -103,7 +109,45 @@ void saveInstruction(inst_type type, int r1, int r2, int r3) {
     if(a.type == WR && history[3].type == WR && a.r1 == history[3].r1) {
       stalls++;
     }
+    
+    // Control Hazard
+    // Consequecence of early evaluation of the branch decision in ID stage
+    if(a.type == BR){
+		
+		// write followed by a branch testing the result
+		if(history[3].type == WR && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
+			stalls++;
+		
+		// load followed by a branch testing the result
+		if(history[3].type == LD && ( history[3].r1 == a.r1 || history[3].r1 == a.r2 ))
+			stalls+=2;	
+	}
+		
+		
   }
+}
+
+/**
+ * resultBranch:
+ *     true: branch taken
+ *     false: branch not taken
+ * npc: new pc
+ * cpc: current pc
+  */
+void countBranchStalls(bool resultBranch, int npc, int cpc){
+	if(predictor == NOT_TAKEN && resultBranch == true){
+		stalls++; // with fowarding and more hardware changes
+	}else if(predictor == NONE){
+		stalls++; // with fowarding and more hardware changes
+	}else if(predictor == BTFNT){
+		// backward branch and not taken
+		if(npc < cpc && resultBranch == false){
+			stalls++;
+		// foward branch and taken
+		}else if(npc > cpc && resultBranch == true){
+			stalls++;
+		}
+	}
 }
 
 //!Generic instruction behavior method.
@@ -753,7 +797,7 @@ void ac_behavior( jalr )
   RB[rd] = ac_pc+4;
   dbg_printf("Return = %#x\n", ac_pc+4);
   saveInstruction(OTHER, 0, 0, 0);
-};
+}; 
 
 //!Instruction beq behavior method.
 void ac_behavior( beq )
@@ -764,7 +808,11 @@ void ac_behavior( beq )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
   }
+  
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -777,7 +825,10 @@ void ac_behavior( bne )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -790,7 +841,10 @@ void ac_behavior( blez )
     npc = ac_pc + (imm<<2), 1;
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -803,7 +857,10 @@ void ac_behavior( bgtz )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -816,7 +873,10 @@ void ac_behavior( bltz )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -829,7 +889,10 @@ void ac_behavior( bgez )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   saveInstruction(OTHER, 0, 0, 0);
 };
 
@@ -843,7 +906,10 @@ void ac_behavior( bltzal )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   dbg_printf("Return = %#x\n", ac_pc+4);
   saveInstruction(OTHER, 0, 0, 0);
 };
@@ -858,7 +924,10 @@ void ac_behavior( bgezal )
     npc = ac_pc + (imm<<2);
 #endif 
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  } 
+    countBranchStalls(true, npc, ac_pc);
+  }else{
+	  countBranchStalls(false, npc, ac_pc);
+  }
   dbg_printf("Return = %#x\n", ac_pc+4);
   saveInstruction(OTHER, 0, 0, 0);
 };
