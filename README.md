@@ -31,10 +31,10 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
         - write after read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
         - Write after write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
     - Hazard de Controle: Será analisado no ponto seguinte, de Branch de Controle.
- - **Branch Predictor:** Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão. Sera analisado para cada uma das seguintes estratégias de branch predictor:
-    - BTFNT: branchs com saltor para trás são preditas como tomadas e para frente como não tomadas.
-    - Always Not Taken: o desvio nunca é tomado
-    - Sem Branch Predictor
+ - **Branch Predictor:** Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão. Foi analisado para cada uma das seguintes estratégias de branch predictor:
+    - BTFNT: branchs com saltos para trás são preditas como tomadas(taken) e para frente como não tomadas(not taken).
+    - Always Not Taken: o desvio nunca é tomado.
+    - Sem Branch Predictor.
  - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior.
  
  Para realizar as medidas foram necessarios fixar parâmetros. OS parametros que foram fixados estarão decritos em cada seção.
@@ -84,7 +84,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios. 
 - Identificação dos estagios em que ocorrem Hazards:
-    - Hazards acontecem somente em processadores escalares, no estagio memoria/registrador. Os demais casos de hazard identificados podem ser resolvidos através de *pipeline fowarding*.
+    - Hazards acontecem somente no estagio memoria/registrador(no tipo raw). Os demais casos de hazard identificados podem ser resolvidos através de *pipeline fowarding*.
 
     -  Read after Write
 
@@ -127,6 +127,8 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     |**Susan** |453558|25493628|27816383|
     |**Sha**|34439|5467427|5897443|
     |**FFT**|15131438|21344620|60440260|
+
+- Para contar os stalls quando não há branch Predictor, supomos que os branchs são tratados no segundo estágio da pipeline, logo, adicionamos um ciclo de stall.
 
 - Analise: 
 
