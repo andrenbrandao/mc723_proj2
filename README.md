@@ -203,5 +203,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
     Também podemos notar que, em geral, alterações na cache 1 apresentam bem mais impacto na perfomance de um processador do que alterações na cache 2, pois a cache 1 faz um número de fetchs muito maior, o que implica em: 
     - diminuição de centesimos na % de misses do cache 1, pode economizar muito mais tempo de processamento do que um aumento de alguns % no miss do cache 2 causaria.
     
+    Vale ressaltar que alterações na cache 2 não surtem efeito nas taxas de miss da cache 1, pois um fetch só é realizado na cache 2, após se realizado na cache 1.
+    
 - **Configuração escolhida**: C3: L1 - Size: 128K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.
     - Assim como no exercício 2, as configurações com o maior tamanho de cache, em geral, apresentam um resultado melhor. Porém é interessante ressaltar que a configuração C2 (L1 - Size: 64K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.) possuiu um desempenho muito próximo ao apresentado pela C3, inclusive com a diminuição das taxas de miss no cache 2, de acordo com o que foi ressaltado na sessão de analise. 
