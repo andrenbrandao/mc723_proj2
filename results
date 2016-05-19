@@ -1,19 +1,212 @@
-QSORT
+FFTsmall.din  qsortSmall.din  shaLarge.din  susanLarge.din
 
 ----- Configurations -----
 Pipeline size: 5
 Superscalar: false
 Branch predictor: None
+Generate Traces: 0
 
 
+FFT small
 ----- Results -----
-Cycles: 37852792
-Instructions: 30455058
-Stalls: 7397734
--- Data: 4650463
--- Branch: 2747271
-CPI: 1.24
+Cycles: 580578581
+Instructions: 504099552
+Stalls: 76479029
+-- Data: 16038769
+-- Branch: 60440260
+CPI: 1.15
+Branch calls: 60440260
+Branch correct: 21344620
 
-Branch calls: 2747271
-Branch correct: 2052526
+
+QSORT
+----- Results -----
+Cycles: 36621323
+Instructions: 29335434
+Stalls: 7285889
+-- Data: 4580475
+-- Branch: 2705414
+CPI: 1.25
+Branch calls: 2705414
+Branch correct: 2021383
+
+
+
+SHA
+----- Results -----
+Cycles: 142004722
+Instructions: 132781860
+Stalls: 9222862
+-- Data: 3325419
+-- Branch: 5897443
+CPI: 1.07
+Branch calls: 5897443
+Branch correct: 5467427
+
+
+SUSAN
+----- Results -----
+Cycles: 398309930
+Instructions: 345070386
+Stalls: 53239544
+-- Data: 25423161
+-- Branch: 27816383
+CPI: 1.15
+Branch calls: 27816383
+Branch correct: 25493628
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+----- Configurations -----
+Pipeline size: 5
+Superscalar: false
+Branch predictor: Always not taken
+Generate Traces: 0
+
+
+FFT small
+----- Results -----
+Cycles: 541482941
+Instructions: 504099552
+Stalls: 37383389
+-- Data: 16038769
+-- Branch: 21344620
+CPI: 1.07
+Branch calls: 60440260
+Branch correct: 21344620
+
+
+
+QSORT
+----- Results -----
+Cycles: 35937292
+Instructions: 29335434
+Stalls: 6601858
+-- Data: 4580475
+-- Branch: 2021383
+CPI: 1.23
+Branch calls: 2705414
+Branch correct: 2021383
+
+
+
+SHA
+----- Results -----
+Cycles: 141574706
+Instructions: 132781860
+Stalls: 8792846
+-- Data: 3325419
+-- Branch: 5467427
+CPI: 1.07
+Branch calls: 5897443
+Branch correct: 5467427
+
+
+
+SUSAN
+----- Results -----
+Cycles: 395987175
+Instructions: 345070386
+Stalls: 50916789
+-- Data: 25423161
+-- Branch: 25493628
+CPI: 1.15
+Branch calls: 27816383
+Branch correct: 25493628
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+----- Configurations -----
+Pipeline size: 5
+Superscalar: false
+Branch predictor: BTFNT
+Generate Traces: 0
+
+FFT small
+Cycles: 535269759
+Instructions: 504099552
+Stalls: 31170207
+-- Data: 16038769
+-- Branch: 15131438
+CPI: 1.06
+Branch calls: 60440260
+Branch correct: 21344620
+
+QSORT
+Cycles: 34713857
+Instructions: 29335434
+Stalls: 5378423
+-- Data: 4580475
+-- Branch: 797948
+CPI: 1.18
+Branch calls: 2705414
+Branch correct: 2021383
+
+SHA
+Cycles: 136141718
+Instructions: 132781860
+Stalls: 3359858
+-- Data: 3325419
+-- Branch: 34439
+CPI: 1.03
+Branch calls: 5897443
+Branch correct: 5467427
+
+SUSAN
+Cycles: 370947105
+Instructions: 345070386
+Stalls: 25876719
+-- Data: 25423161
+-- Branch: 453558
+CPI: 1.07
+Branch calls: 27816383
+Branch correct: 25493628
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+----- Configurations -----
+Pipeline size: 5
+Superscalar: true
+Branch predictor: None
+Generate Traces: 0
+
+FFT small
+Cycles: 676213623
+Instructions: 504099552
+Stalls: 172114071
+-- Data: 111673811
+-- Branch: 60440260
+CPI: 1.34
+Branch calls: 60440260
+Branch correct: 21344620
+
+QSORT
+Cycles: 44002051
+Instructions: 29335434
+Stalls: 14666617
+-- Data: 11961203
+-- Branch: 2705414
+CPI: 1.50
+Branch calls: 2705414
+Branch correct: 2021383
+
+SHA
+Cycles: 156184905
+Instructions: 132781860
+Stalls: 23403045
+-- Data: 17505602
+-- Branch: 5897443
+CPI: 1.18
+Branch calls: 5897443
+Branch correct: 5467427
+
+SUSAN
+Cycles: 462896721
+Instructions: 345070386
+Stalls: 117826335
+-- Data: 90009952
+-- Branch: 27816383
+CPI: 1.34
+Branch calls: 27816383
+Branch correct: 25493628
 

@@ -9,7 +9,10 @@ make -f Makefile.archc
 cp mips_isa.cpp test-mips/
 
 -- run
-./mips.x --load=../programs/qsort/qsort_small.mips ../programs/qsort/input_small.dat 
 
+./mips-1.0.2/mips.x --load=programs/susan/susan programs/susan/input_large.pgm programs/susan/output_large.smoothing.pgm -s
+./mips-1.0.2/mips.x --load=programs/qsort/qsort_small programs/qsort/input_small.dat 
+./mips-1.0.2/mips.x --load=programs/sha/sha programs/sha/input_large.asc 
+./mips-1.0.2/mips.x --load=programs/FFT/fft 4 4096
 
 
