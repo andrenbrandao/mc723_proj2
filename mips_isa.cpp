@@ -62,10 +62,12 @@ enum branch_pred_type {BTFNT, NOT_TAKEN, NONE};
  * - pipeline size
  * - branch predictor type
  * - super scalar
+ * - generate traces
  */
 int pipeline_size = 5;
 int superscalar = 0;
 branch_pred_type predictor = NONE;
+int generate_traces = 0;
 
 /*
  * COUNTERS
@@ -180,7 +182,9 @@ void writeTofile(DINERO_TYPE type, int address){
 }
 
 void init(){
-	dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
+	if(generate_traces)
+		dineroTraceOutputFile.open("/tmp/dineroTraceOutputFile.trace", std::ofstream::out | std::ofstream::trunc);
+		
 	instructions = 0;
 	stalls = 0;
 	branch_stalls = 0;
@@ -229,6 +233,8 @@ void print_result(){
   printf("Branch calls: %d\n", branch_calls);
   printf("Branch correct: %d\n", branch_correct);
   
+  printf("\nGenerate Traces: %d\n", generate_traces);
+  
   printf("\n\n\n");
 }
 
@@ -272,7 +278,9 @@ void ac_behavior(begin)
 void ac_behavior(end)
 {
   dbg_printf("@@@ end behavior @@@\n");
-  dineroTraceOutputFile.close();
+  
+  if(generate_traces)
+	dineroTraceOutputFile.close();
   
   print_config();
   print_result();
