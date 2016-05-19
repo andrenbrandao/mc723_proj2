@@ -21,12 +21,12 @@
 ## Medidas de Desempenho:
 Medimos o impacto, no desempenho de um processador, de diferentes características através das seguintes métricas:
  - **Tamanho do Pipeline:** Calculo do número de ciclos executados para diferentes tamanhos de pipeline (sem pipeline, 5 estagios, 7 estagio e 13 estagios)
- - **Processador escalar vs. Superescalar:** 
+ - **Processador escalar vs. Superescalar:**
     - Contagem do número total de ciclos executados em cada processador;
     - Contagem do números de ciclos de stalls para cada processador.
  - **Hazard de Dados e Controle:**
-    - Identificação dos estagios em que ocorrem Hazards; 
-    - Hazard de Dados: 
+    - Identificação dos estágios em que ocorrem Hazards;
+    - Hazard de Dados:
         - Read after Write - analise de processador escalar vs superescalar
         - write after read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
         - Write after write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
@@ -36,7 +36,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - Always Not Taken: o desvio nunca é tomado.
     - Sem Branch Predictor.
  - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior.
- 
+
  Para realizar as medidas foram necessarios fixar parâmetros. OS parametros que foram fixados estarão decritos em cada seção.
 ## Resultados Obtidos:
 ### Tamanho do Pipeline
@@ -57,6 +57,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios
     - Número de instruções por ciclo de clock do processador superescalar: 2.
+    - Considerando os hazards de controle e dados.
     - Branch Predicor: sem branch predictor
 - Contagem do número total de ciclos executados em cada processador:
 
@@ -77,50 +78,25 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 |**FFT**|76479029|283787883|
 
 - Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teorico, esperado para o número total de ciclos executados é:
-    - Processador escalar: n + 5 + # de ciclos de stall 
+    - Processador escalar: n + 5 + # de ciclos de stall
     - Processador supesescalar: n/2 + 5 + # de ciclos de stall
 
-### Hazard de Dados e Controle
-- Parâmetros Fixos:
-    - Tamanho da pipeline: 5 estágios. 
-- Identificação dos estagios em que ocorrem Hazards:
-    - Hazards acontecem somente no estagio memoria/registrador(no tipo raw). Os demais casos de hazard identificados podem ser resolvidos através de *pipeline fowarding*.
 
-    -  Read after Write
+- Para o processador superescalar, foram considerados os hazards do tipo:
+  - RAW - Read after Write
+  - WAR - Write after Read
+  - WAW - Write after Write
+- Para o processador escalar, apenas o RAW.
+- Para os hazards na mesma pipeline, apenas foram considerados os casos memória/registrador. Os demais casos de hazard identificados podem ser resolvidos através de **pipeline fowarding**.
 
-        | |**Processador Escalar**|**Processador Superescalar**|
-        |---|---|---|
-        |**QSort** |||
-        |**Lame** |||
-        |**Sha**|||
-        |**FFT**|||
 
-    - Write after Read
-    
-        | |**Processador Superescalar**|
-        |---|---|
-        |**QSort** ||
-        |**Lame** ||
-        |**Sha**||
-        |**FFT**||
-
-    - Write after Write
-    
-        | |**Processador Superescalar**|
-        |---|---|
-        |**QSort** ||
-        |**Lame** ||
-        |**Sha**||
-        |**FFT**||
-
-- Analise:
 
 ### Branch Predictor:
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios;
     - Processador Escalar;
  - Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
- 
+
     | |**BTFNT**|**Always Not Taken**|**Sem Branch Predictor**|
     |---|---|---|---|
     |**QSort** |797948|2021383|2705414|
@@ -130,11 +106,11 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 
 - Para contar os stalls quando não há branch Predictor, supomos que os branchs são tratados no segundo estágio da pipeline, logo, adicionamos um ciclo de stall.
 
-- Analise: 
+- Analise:
 
 ### Cache:
 - Parâmetros Fixos:
-    - Tamanho da pipeline: 5 estágios. 
+    - Tamanho da pipeline: 5 estágios.
 - C1:
     - L1:
 
@@ -146,7 +122,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
         |FFT|129865348|52.62%|47.38%|0.18%|0.34%|0.01%|    
 
     - L2
-    
+
         | |Total Fetchs|% Read| % Write| % Misses (do total)| % Read miss | %Write Miss|
         |---|---|---|---|---|---|---|
         |QSort |131167|57.83%|42.17%|15.18%|23.78%|3.39|
@@ -164,7 +140,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
         |FFT|129865348|52.62%|47.38%|0.20%|0.36%|0.02%|    
 
     - L2
-    
+
         | |Total Fetchs|% Read| % Write| % Misses (do total)| % Read miss | %Write Miss|
         |---|---|---|---|---|---|---|
         |QSort |158793|56.91%|43.09%|6.32%|11.11%|0%|
@@ -173,7 +149,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
         |FFT|269084|95.68%|4.32%|52.36%|54.67%|1.06%|
 - C3:
     - L1:
-    
+
         | |Total Fetchs|% Read| % Write| % Misses (do total)| % Read miss | %Write Miss|
         |---|---|---|---|---|---|---|
         |QSort |15797640|61.20%|38.80%|0.48%|0.57%|0.33%|
@@ -182,7 +158,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
         |FFT|129865348|52.62%|47.38%|0.18%|0.34%|0.01%|   
 
     - L2
-    
+
         | |Total Fetchs|% Read| % Write| % Misses (do total)| % Read miss | %Write Miss|
         |---|---|---|---|---|---|---|
         |QSort |131167|57.83%|42.17%|7.65%|13.24%|0%|
@@ -201,7 +177,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
         |FFT|129865348|52.62%|47.38%|0.20%|0.36%|0.02%|   
 
     - L2
-    
+
         | |Total Fetchs|% Read| % Write| % Misses (do total)| % Read miss | %Write Miss|
         |---|---|---|---|---|---|---|
         |QSort |158793|56.91%|43.09%|12.10%|20.23%|1.37%|
