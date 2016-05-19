@@ -194,7 +194,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
         |Sha|749613|99.46%|0.54%|57.90%|58.13%|14.89%|
         |FFT|269084|95.68%|4.32%|54.75%|57.13%|1.94%|
         
-- Analise: Dos resultados obtidos é possível perceber que, em geral, alterações no tamanho da cache 1, influenciam o número de fetchs e % de misses da cache 2, da seguinte maneira:
+- **Analise**: Dos resultados obtidos é possível perceber que, em geral, alterações no tamanho da cache 1, influenciam o número de fetchs e % de misses da cache 2, da seguinte maneira:
     - Aumento da cache 1: causa diminuição no número de fetchs e aumento na % de misses da cache 2. 
     - Diminuição da cache 1: causa aumento no número de fetchs e diminuição na % de misses da cache 2 
 
