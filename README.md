@@ -26,27 +26,30 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - Contagem do números de ciclos de stalls para cada processador.
  - **Hazard de Dados e Controle:**
     - Identificação dos estagios em que ocorrem Hazards; 
-    - Hazard de Dados: Contagem do número de stalls quando um hazard de controle ocorre (branch predictor falha) para os seguintes casos:
+    - Hazard de Dados: 
         - Read after Write - analise de processador escalar vs superescalar
         - write after read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
         - Write after write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
     - Hazard de Controle: Será analisado no ponto seguinte, de Branch de Controle.
  - **Branch Predictor:** Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão. Sera analisado para cada uma das seguintes estratégias de branch predictor:
-    - Always Taken: o desvio é sempre tomado
-    - Never Taken: o desvio nunca é tomado
+    - BTFNT: branchs com saltor para trás são preditas como tomadas e para frente como não tomadas.
+    - Always Not Taken: o desvio nunca é tomado
     - Sem Branch Predictor
  - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior.
  
  Para realizar as medidas foram necessarios fixar parâmetros. OS parametros que foram fixados estarão decritos em cada seção.
 ## Resultados Obtidos:
 ### Tamanho do Pipeline
+- Parâmetros Fixos:
+    - Superescalar: não
+    - Branch Predictor: Sem branch predictor
 
 | |**Sem Pipeline**|**5 estágios**|**7 estágios**|**13 estágios**|
 |---|---|---|---|---|
-|**QSort** |||||
-|**Lame** |||||
-|**Sha**|||||
-|**FFT**|||||
+|**QSort** ||36621328|||
+|**Susan** ||398309935|||
+|**Sha**||142004727|||
+|**FFT**||580578586|||
 
 - Analise:
 
@@ -54,23 +57,24 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios
     - Número de instruções por ciclo de clock do processador superescalar: 2.
+    - Branch Predicor: sem branch predictor
 - Contagem do número total de ciclos executados em cada processador:
 
 | |**Processador Escalar**|**Processador Superescalar**|
 |---|---|---|
-|**QSort** |||
-|**Lame** |||
-|**Sha**|||
-|**FFT**|||
+|**QSort** |36621328|44002056|
+|**Susan** |398309935|462896726|
+|**Sha**|142004727|156184910|
+|**FFT**|580578586|676213628|
 
 - Contagem do números de ciclos de stalls para cada processador:
 
 | |**Processador Escalar**|**Processador Superescalar**|
 |---|---|---|
-|**QSort** |||
-|**Lame** |||
-|**Sha**|||
-|**FFT**|||
+|**QSort** |7285889|14666617|
+|**Susan** |53239544|117826335|
+|**Sha**|9222862|23403045|
+|**FFT**|76479029|172114071|
 
 - Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teorico, esperado para o número total de ciclos executados é:
     - Processador escalar: n + 5 + # de ciclos de stall 
@@ -81,7 +85,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - Tamanho da pipeline: 5 estágios. 
 - Identificação dos estagios em que ocorrem Hazards:
     - Hazards acontecem somente em processadores escalares, no estagio memoria/registrador. Os demais casos de hazard identificados podem ser resolvidos através de *pipeline fowarding*.
-- Contagem do número de stalls quando um hazard de controle ocorre (brench predictor falha).
+
     -  Read after Write
 
         | |**Processador Escalar**|**Processador Superescalar**|
@@ -115,15 +119,14 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios;
     - Processador Escalar;
-    - Sem Hazard de Dados.
  - Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
  
-    | |**Always Taken**|**Never Taken**|**Sem Branch Predictor**|
+    | |**BTFNT**|**Always Not Taken**|**Sem Branch Predictor**|
     |---|---|---|---|
-    |**QSort** ||||
-    |**Lame** ||||
-    |**Sha**||||
-    |**FFT**||||
+    |**QSort** |797948|2021383|2705414|
+    |**Susan** |453558|25493628|27816383|
+    |**Sha**|34439|5467427|5897443|
+    |**FFT**|15131438|21344620|60440260|
 
 - Analise: 
 

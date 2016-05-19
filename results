@@ -9,7 +9,7 @@ Generate Traces: 0
 
 FFT small
 ----- Results -----
-Cycles: 580578581
+Cycles: 580578586
 Instructions: 504099552
 Stalls: 76479029
 -- Data: 16038769
@@ -21,7 +21,7 @@ Branch correct: 21344620
 
 QSORT
 ----- Results -----
-Cycles: 36621323
+Cycles: 36621328
 Instructions: 29335434
 Stalls: 7285889
 -- Data: 4580475
@@ -34,7 +34,7 @@ Branch correct: 2021383
 
 SHA
 ----- Results -----
-Cycles: 142004722
+Cycles: 142004727
 Instructions: 132781860
 Stalls: 9222862
 -- Data: 3325419
@@ -46,7 +46,7 @@ Branch correct: 5467427
 
 SUSAN
 ----- Results -----
-Cycles: 398309930
+Cycles: 398309935
 Instructions: 345070386
 Stalls: 53239544
 -- Data: 25423161
@@ -171,7 +171,7 @@ Branch predictor: None
 Generate Traces: 0
 
 FFT small
-Cycles: 676213623
+Cycles: 676213628
 Instructions: 504099552
 Stalls: 172114071
 -- Data: 111673811
@@ -181,7 +181,7 @@ Branch calls: 60440260
 Branch correct: 21344620
 
 QSORT
-Cycles: 44002051
+Cycles: 44002056
 Instructions: 29335434
 Stalls: 14666617
 -- Data: 11961203
@@ -191,7 +191,7 @@ Branch calls: 2705414
 Branch correct: 2021383
 
 SHA
-Cycles: 156184905
+Cycles: 156184910
 Instructions: 132781860
 Stalls: 23403045
 -- Data: 17505602
@@ -201,7 +201,7 @@ Branch calls: 5897443
 Branch correct: 5467427
 
 SUSAN
-Cycles: 462896721
+Cycles: 462896726
 Instructions: 345070386
 Stalls: 117826335
 -- Data: 90009952
