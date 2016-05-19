@@ -56,7 +56,6 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - Branch Predictor: Sem branch predictor
     - **Desconsiderando** hazards (seja de dados ou de controle)
 
-
     | | **Sem Pipeline** | **5 estágios** | **7 estágios** | **13 estágios** |
     |---|---|---|---|---|
     | **QSort** |189233668|39454195|39454197|39454203|
@@ -76,6 +75,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
   - **RAW** - Read after Write
   - **WAR** - Write after Read
   - **WAW** - Write after Write
+
 - Para o processador escalar, apenas o **RAW**.
 - Para os hazards na mesma pipeline, apenas foram considerados os casos memória/registrador. Os demais casos de hazard identificados podem ser resolvidos através de **pipeline fowarding**.
 - Neste caso, foi considerado também os hazards de controle e consideramos que eles eram resolvidos no segundo estágio da pipeline, ocasionando em uma bolha de 1 ciclo de execução.
@@ -90,6 +90,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 |**FFT**|580578586|535837659|
 
 Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teórico, esperado para o número total de ciclos executados é:
+
     - Processador escalar: n + 5 + # de ciclos de stall
     - Processador supesescalar: n/2 + 5 + # de ciclos de stall
 
