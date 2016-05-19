@@ -209,7 +209,8 @@ void print_config(){
     printf("Always not taken\n");
   else
     printf("None\n");
-  
+
+  printf("\nGenerate Traces: %d\n", generate_traces);
 }
 
 void print_result(){
@@ -228,13 +229,9 @@ void print_result(){
   printf("-- Data: %d\n", stalls);
   printf("-- Branch: %d\n", branch_stalls);
   printf("CPI: %.2f\n", cpi);
-  
-  printf("\n");
   printf("Branch calls: %d\n", branch_calls);
   printf("Branch correct: %d\n", branch_correct);
-  
-  printf("\nGenerate Traces: %d\n", generate_traces);
-  
+   
   printf("\n\n\n");
 }
 
