@@ -26,7 +26,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - Contagem do números de ciclos de stalls para cada processador.
  - **Hazard de Dados e Controle:**
     - Identificação dos estagios em que ocorrem Hazards; 
-    - Hazard de Dados: Contagem do número de stalls quando um hazard de controle ocorre (brench predictor falha) para os seguintes casos:
+    - Hazard de Dados: Contagem do número de stalls quando um hazard de controle ocorre (branch predictor falha) para os seguintes casos:
         - Read after Write - analise de processador escalar vs superescalar
         - write after read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
         - Write after write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
