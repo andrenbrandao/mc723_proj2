@@ -35,7 +35,13 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - BTFNT: branchs com saltos para trás são preditas como tomadas(taken) e para frente como não tomadas(not taken).
     - Always Not Taken: o desvio nunca é tomado.
     - Sem Branch Predictor.
- - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior.
+ - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior. Os dados que coletamos para um dos caches são:
+    - Número total de Fetchs
+    - % de Reads (do número total de Fetchs)
+    - % de Writes (do número total de Fetchs)
+    - % de miss
+    - % de Read miss
+    - % de Write miss
 
  Para realizar as medidas foram necessarios fixar parâmetros. OS parametros que foram fixados estarão decritos em cada seção.
 ## Resultados Obtidos:
@@ -111,6 +117,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 - Análise:
 
 ### Cache:
+
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios.
 - C1:
@@ -186,3 +193,4 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
         |Susan |202862|97.86%|2.14%|1.57%|1.60%|0%|
         |Sha|749613|99.46%|0.54%|57.90%|58.13%|14.89%|
         |FFT|269084|95.68%|4.32%|54.75%|57.13%|1.94%|
+
