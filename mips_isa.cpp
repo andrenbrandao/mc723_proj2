@@ -65,7 +65,7 @@ enum branch_pred_type {BTFNT, NOT_TAKEN, NONE};
  * - generate traces
  */
 int pipeline_size = 5;
-int superscalar = 0;
+int superscalar = 1;
 branch_pred_type predictor = NONE;
 int generate_traces = 0;
 
@@ -216,11 +216,13 @@ void print_config(){
 void print_result(){
   printf("\n\n----- Results -----\n");
   
+  int cycles = instructions;
+
   if(superscalar)
-    stalls = stalls/2;
+    cycles = cycles/2;
   
   int total_stalls = stalls + branch_stalls;
-  int total_cycles = instructions + total_stalls;
+  int total_cycles = cycles + total_stalls;
   float cpi = total_cycles / (float) instructions;
   
   printf("Cycles: %d\n", total_cycles);
