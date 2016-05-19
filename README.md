@@ -43,21 +43,23 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 - Parâmetros Fixos:
     - Superescalar: não
     - Branch Predictor: Sem branch predictor
+    - **Desconsiderando** HAZARDS(seja de dados ou de controle)
 
-| |**Sem Pipeline**|**5 estágios**|**7 estágios**|**13 estágios**|
-|---|---|---|---|---|
-|**QSort** ||36621328|||
-|**Susan** ||398309935|||
-|**Sha**||142004727|||
-|**FFT**||580578586|||
+    | **Sem Pipeline** | **5 estágios** | **7 estágios** | **13 estágios** |
+    |---|---|---|---|---|
+    | **QSort** |189233668|39454195|39454197|39454203|
+    |  **Susan** |1148441221|395746858|395746860|395746866|
+    | **Sha** |391062479|137085619|137085621|137085627|
+    | **FFT** |1878273331|539993328|539993330|539993336|
 
-- Analise:
+- Análise:
+Vemos claramente que entre os processadores com pipeline, não há muito diferença se não considerarmos os hazards. Já para a versão com pipeline para a sem pipeline, temos uma média de melhora de aproximadamente **70%** na performance dos aplicativos.
 
 ### Processadorescalar vs Superescalar:
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios
     - Número de instruções por ciclo de clock do processador superescalar: 2.
-    - Considerando os hazards de controle e dados.
+    - **Considerando** os hazards de controle e dados.
     - Branch Predicor: sem branch predictor
 - Contagem do número total de ciclos executados em cada processador:
 
@@ -77,18 +79,18 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 |**Sha**|9222862|40908648|
 |**FFT**|76479029|283787883|
 
-- Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teorico, esperado para o número total de ciclos executados é:
+- Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teórico, esperado para o número total de ciclos executados é:
     - Processador escalar: n + 5 + # de ciclos de stall
     - Processador supesescalar: n/2 + 5 + # de ciclos de stall
 
 
 - Para o processador superescalar, foram considerados os hazards do tipo:
-  - RAW - Read after Write
-  - WAR - Write after Read
-  - WAW - Write after Write
-- Para o processador escalar, apenas o RAW.
+  - **RAW** - Read after Write
+  - **WAR** - Write after Read
+  - **WAW** - Write after Write
+- Para o processador escalar, apenas o **RAW**.
 - Para os hazards na mesma pipeline, apenas foram considerados os casos memória/registrador. Os demais casos de hazard identificados podem ser resolvidos através de **pipeline fowarding**.
-
+- Nesse caso, foi considerado também os hazards de controle e consideramos que eles eram resolvidos no segundo estágio da pipeline, ocasionando em uma bolha de 1 ciclo de execução.
 
 
 ### Branch Predictor:
@@ -106,7 +108,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 
 - Para contar os stalls quando não há branch Predictor, supomos que os branchs são tratados no segundo estágio da pipeline, logo, adicionamos um ciclo de stall.
 
-- Analise:
+- Análise:
 
 ### Cache:
 - Parâmetros Fixos:
