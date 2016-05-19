@@ -115,6 +115,10 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 - Para contar os stalls quando não há branch Predictor, supomos que os branchs são tratados no segundo estágio da pipeline, logo, adicionamos um ciclo de stall.
 
 - Análise:
+Na média, obtemos uma melhora de aproximadamente para os casos:
+  - Always Not Taken:  Melhora de **26,40%**.
+  - BTFNT: Melhora de **71,80%**.
+Vemos claramente que a estratégia de branch dinâmica funciona muito melhor que a estratégia simples, mas a simples também funciona bem em alguns casos, chegando até 65% de melhora no caso do fft.
 
 ### Cache:
 
@@ -193,17 +197,17 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
         |Susan |202862|97.86%|2.14%|1.57%|1.60%|0%|
         |Sha|749613|99.46%|0.54%|57.90%|58.13%|14.89%|
         |FFT|269084|95.68%|4.32%|54.75%|57.13%|1.94%|
-        
+
 - **Analise**: Dos resultados obtidos é possível perceber que, em geral, alterações no tamanho da cache 1, influenciam o número de fetchs e % de misses da cache 2, da seguinte maneira:
-    - Aumento da cache 1: causa diminuição no número de fetchs e aumento na % de misses da cache 2. 
-    - Diminuição da cache 1: causa aumento no número de fetchs e diminuição na % de misses da cache 2 
+    - Aumento da cache 1: causa diminuição no número de fetchs e aumento na % de misses da cache 2.
+    - Diminuição da cache 1: causa aumento no número de fetchs e diminuição na % de misses da cache 2
 
     O numero de fetchs e a % de misses apresentam esta relação inversa, pois um miss possui maior relevancia quando o número de fetchs é menor.
-    
-    Também podemos notar que, em geral, alterações na cache 1 apresentam bem mais impacto na perfomance de um processador do que alterações na cache 2, pois a cache 1 faz um número de fetchs muito maior, o que implica em: 
+
+    Também podemos notar que, em geral, alterações na cache 1 apresentam bem mais impacto na perfomance de um processador do que alterações na cache 2, pois a cache 1 faz um número de fetchs muito maior, o que implica em:
     - diminuição de centesimos na % de misses do cache 1, pode economizar muito mais tempo de processamento do que um aumento de alguns % no miss do cache 2 causaria.
-    
+
     Vale ressaltar que alterações na cache 2 não surtem efeito nas taxas de miss da cache 1, pois um fetch só é realizado na cache 2, após se realizado na cache 1.
-    
+
 - **Configuração escolhida**: C3: L1 - Size: 128K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.
-    - Assim como no exercício 2, as configurações com o maior tamanho de cache, em geral, apresentam um resultado melhor. Porém é interessante ressaltar que a configuração C2 (L1 - Size: 64K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.) possuiu um desempenho muito próximo ao apresentado pela C3, inclusive com a diminuição das taxas de miss no cache 2, de acordo com o que foi ressaltado na sessão de analise. 
+    - Assim como no exercício 2, as configurações com o maior tamanho de cache, em geral, apresentam um resultado melhor. Porém é interessante ressaltar que a configuração C2 (L1 - Size: 64K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.) possuiu um desempenho muito próximo ao apresentado pela C3, inclusive com a diminuição das taxas de miss no cache 2, de acordo com o que foi ressaltado na sessão de analise.
