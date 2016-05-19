@@ -51,7 +51,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - Branch Predictor: Sem branch predictor
     - **Desconsiderando** HAZARDS(seja de dados ou de controle)
 
-    | **Sem Pipeline** | **5 estágios** | **7 estágios** | **13 estágios** |
+    | | **Sem Pipeline** | **5 estágios** | **7 estágios** | **13 estágios** |
     |---|---|---|---|---|
     | **QSort** |189233668|39454195|39454197|39454203|
     |  **Susan** |1148441221|395746858|395746860|395746866|
