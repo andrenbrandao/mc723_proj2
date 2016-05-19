@@ -171,42 +171,43 @@ Branch predictor: None
 Generate Traces: 0
 
 FFT small
-Cycles: 676213628
+Cycles: 535837664
 Instructions: 504099552
-Stalls: 172114071
--- Data: 111673811
+Stalls: 283787883
+-- Data: 223347623
 -- Branch: 60440260
-CPI: 1.34
+CPI: 1.06
 Branch calls: 60440260
 Branch correct: 21344620
 
 QSORT
-Cycles: 44002056
+Cycles: 41295542
 Instructions: 29335434
-Stalls: 14666617
--- Data: 11961203
+Stalls: 26627820
+-- Data: 23922406
 -- Branch: 2705414
-CPI: 1.50
+CPI: 1.41
 Branch calls: 2705414
 Branch correct: 2021383
 
 SHA
-Cycles: 156184910
+Cycles: 107299583
 Instructions: 132781860
-Stalls: 23403045
--- Data: 17505602
+Stalls: 40908648
+-- Data: 35011205
 -- Branch: 5897443
-CPI: 1.18
+CPI: 0.81
 Branch calls: 5897443
 Branch correct: 5467427
 
 SUSAN
-Cycles: 462896726
+Cycles: 380371486
 Instructions: 345070386
-Stalls: 117826335
--- Data: 90009952
+Stalls: 207836288
+-- Data: 180019905
 -- Branch: 27816383
-CPI: 1.34
+CPI: 1.10
 Branch calls: 27816383
 Branch correct: 25493628
+
 

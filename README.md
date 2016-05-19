@@ -62,19 +62,19 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 
 | |**Processador Escalar**|**Processador Superescalar**|
 |---|---|---|
-|**QSort** |36621328|44002056|
-|**Susan** |398309935|462896726|
-|**Sha**|142004727|156184910|
-|**FFT**|580578586|676213628|
+|**QSort** |36621328|41295537|
+|**Susan** |398309935|380371486|
+|**Sha**|142004727|107299583|
+|**FFT**|580578586|535837659|
 
 - Contagem do números de ciclos de stalls para cada processador:
 
 | |**Processador Escalar**|**Processador Superescalar**|
 |---|---|---|
-|**QSort** |7285889|14666617|
-|**Susan** |53239544|117826335|
-|**Sha**|9222862|23403045|
-|**FFT**|76479029|172114071|
+|**QSort** |7285889|26627820|
+|**Susan** |53239544|207836288|
+|**Sha**|9222862|40908648|
+|**FFT**|76479029|283787883|
 
 - Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teorico, esperado para o número total de ciclos executados é:
     - Processador escalar: n + 5 + # de ciclos de stall 
