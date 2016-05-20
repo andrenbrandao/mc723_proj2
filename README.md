@@ -31,14 +31,16 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
  - **Hazard de Dados e Controle:**
     - Identificação dos estágios em que ocorrem Hazards;
     - Hazard de Dados:
-        - Read after Write - analise de processador escalar vs superescalar
-        - write after read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
-        - Write after write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
+        - Read After Write - analise de processador escalar vs superescalar
+        - Write After Read - analise apenas de processador superescalar, pois ocorre apenas quando existe concorrência
+        - Write After Write - analise apenas para superescalar, pois ocorre apenas quando existe concorrência
     - Hazard de Controle: Será analisado no ponto seguinte, de Branch de Controle.
+
  - **Branch Predictor:** Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão. Foi analisado para cada uma das seguintes estratégias de branch predictor:
     - BTFNT: branchs com saltos para trás são preditas como tomadas(taken) e para frente como não tomadas(not taken).
     - Always Not Taken: o desvio nunca é tomado.
     - Sem Branch Predictor.
+
  - **Cache:** Analise do trace gerado pelo Dinero para as configurações C1, C2, C3 e C4 de cache, descritas na sessão anterior. Os dados que coletamos para um dos caches são:
     - Número total de Fetchs
     - % de Reads (do número total de Fetchs)
@@ -53,7 +55,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
 - Parâmetros Fixos:
     - Superescalar: não
     - Branch Predictor: Sem branch predictor
-    - **Desconsiderando** HAZARDS(seja de dados ou de controle)
+    - **Desconsiderando** hazards (seja de dados ou de controle)
 
     | | **Sem Pipeline** | **5 estágios** | **7 estágios** | **13 estágios** |
     |---|---|---|---|---|
@@ -74,16 +76,32 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios
     - Número de instruções por ciclo de clock do processador superescalar: 2.
-    - **Considerando** os hazards de controle e dados.
     - Branch Predicor: sem branch predictor
+
+-Neste caso levamos em consideração os hazards de dados. Para o processador superescalar, foram considerados os hazards do tipo:
+  - **RAW** - Read after Write
+  - **WAR** - Write after Read
+  - **WAW** - Write after Write
+
+- Para o processador escalar, apenas o **RAW**.
+- Para os hazards na mesma pipeline, apenas foram considerados os casos memória/registrador. Os demais casos de hazard identificados podem ser resolvidos através de **pipeline fowarding**.
+- Neste caso, foi considerado também os hazards de controle e consideramos que eles eram resolvidos no segundo estágio da pipeline, ocasionando em uma bolha de 1 ciclo de execução.
+
 - Contagem do número total de ciclos executados em cada processador:
 
 | |**Processador Escalar**|**Processador Superescalar**|
 |---|---|---|
 |**QSort** |36621328|41295537|
-|**Susan** |398309935|380371486|
+|**Susan** |398309935|380371486| 
 |**Sha**|142004727|107299583|
 |**FFT**|580578586|535837659|
+
+Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teórico, esperado para o número total de ciclos executados é:
+
+    - Processador escalar: n + 5 + # de ciclos de stall
+    - Processador supesescalar: n/2 + 5 + # de ciclos de stall
+
+Dessa forma, se os números de stalls não variassem muito de um caso para outro o processador superescalar deveria ter um desempenho muito superior ao escalar. Contudo, olhando os dados da tabela, vemos que não é isso o que acontece, pelo contrário, na maioria dos casos (Susan, Sha, Fft) houve uma piora no desempenho e somento no caso do Qsort há uma melhora de 12% no desempenho. Para entender melhor este acontecimento devemos olhar também para o número de stalls em cada caso.
 
 - Contagem do números de ciclos de stalls para cada processador:
 
@@ -94,25 +112,14 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 |**Sha**|9222862|40908648|
 |**FFT**|76479029|283787883|
 
-- Analise: Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teórico, esperado para o número total de ciclos executados é:
-    - Processador escalar: n + 5 + # de ciclos de stall
-    - Processador supesescalar: n/2 + 5 + # de ciclos de stall
-
-
-- Para o processador superescalar, foram considerados os hazards do tipo:
-  - **RAW** - Read after Write
-  - **WAR** - Write after Read
-  - **WAW** - Write after Write
-- Para o processador escalar, apenas o **RAW**.
-- Para os hazards na mesma pipeline, apenas foram considerados os casos memória/registrador. Os demais casos de hazard identificados podem ser resolvidos através de **pipeline fowarding**.
-- Nesse caso, foi considerado também os hazards de controle e consideramos que eles eram resolvidos no segundo estágio da pipeline, ocasionando em uma bolha de 1 ciclo de execução.
-
+Olhando estes dados vemos que o número de stalls aumentou significantemente no caso do processador superescalar, em média de 25% a mais de no caso de um processador escalar. Se analisarmos, para o processador superescalar, o número de ciclos de stalls em relação ao número total de ciclos (tabela anterior) vemos que em torno de 50% do total de ciclos é em razão de stalls resultantes de hazards de dados e de controle.
 
 ### Branch Predictor:
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios;
     - Processador Escalar;
-- Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
+
+ - Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
 
     | |**BTFNT**|**Always Not Taken**|**Sem Branch Predictor**|
     |---|---|---|---|
@@ -121,7 +128,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
     |**Sha**|34439|5467427|5897443|
     |**FFT**|15131438|21344620|60440260|
 
-- Para contar os stalls quando não há branch Predictor, supomos que os branchs são tratados no segundo estágio da pipeline, logo, adicionamos um ciclo de stall.
+- Para contar os stalls quando não há branch Predictor, supomos que os branchs são tratados no segundo estágio da pipeline, logo, sempre adicionamos um ciclo de stall.
 
 - Análise:
 Na média, obtemos uma melhora de aproximadamente para os casos:
@@ -129,6 +136,9 @@ Na média, obtemos uma melhora de aproximadamente para os casos:
   - BTFNT: Melhora de **71,80%**.
 
 Vemos claramente que a estratégia de branch dinâmica funciona muito melhor que a estratégia simples, mas a simples também funciona bem em alguns casos, chegando até 65% de melhora no caso do fft.
+Analisando cada um dos programas vemos que: tanto o Sha quanto o Susan obtiveram uma melhora mínima, em torno de 10%, utilizando o *Always Not Taken* mas chegaram há quase 99% na melhora do desempenho no caso do *BTFNT*. Isso provavelmente é explicado por um alto indice de loops durante a execução desses programas, o que faz com que a *BTFNT* se comporte melhor, já que ela se benificia desses casos (loops são resultados de vários jumps para trás (backwards) que são tratados como *taken* nesta predição). O Qsort teve uma melhor significativa com o uso do *Always Not Taken*, em torno de 25%, mas teve um resultado também muito bom com o *BTFNT*, uma melhora de 70%. O FFT apresentou também um comportamento diferente, com uma melhora muito boa já com a utilização do *Always Not Taken*, 65%, e um resultado próximo com o *BTFNT*, em torno de 75%.
+
+Dessa forma, vemos que a *BTFNT* foi a que obteve um melhor desempenho entre elas, chegando a melhora de até impressinantes 99,42%, no caso do Sha, em relação a execução sem branch predictor. 
 
 ### Cache:
 
