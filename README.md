@@ -78,7 +78,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
     - Número de instruções por ciclo de clock do processador superescalar: 2.
     - Branch Predicor: sem branch predictor
 
--Neste caso levamos em consideração os hazards de dados. Para o processador superescalar, foram considerados os hazards do tipo:
+- Neste caso levamos em consideração os hazards de dados. Para o processador superescalar, foram considerados os hazards do tipo:
   - **RAW** - Read after Write
   - **WAR** - Write after Read
   - **WAW** - Write after Write
@@ -98,8 +98,8 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 
 Como o processador escalar explora o paralelismo em nivel de instrução, para um programa que executa n instruções temos que o resultado, teórico, esperado para o número total de ciclos executados é:
 
-    - Processador escalar: n + 5 + # de ciclos de stall
-    - Processador supesescalar: n/2 + 5 + # de ciclos de stall
+- Processador escalar: n + 5 + # de ciclos de stall
+- Processador supesescalar: n/2 + 5 + # de ciclos de stall
 
 Dessa forma, se os números de stalls não variassem muito de um caso para outro o processador superescalar deveria ter um desempenho muito superior ao escalar. Contudo, olhando os dados da tabela, vemos que não é isso o que acontece, pelo contrário, na maioria dos casos (Susan, Sha, Fft) houve uma piora no desempenho e somento no caso do Qsort há uma melhora de 12% no desempenho. Para entender melhor este acontecimento devemos olhar também para o número de stalls em cada caso.
 
@@ -136,6 +136,7 @@ Na média, obtemos uma melhora de aproximadamente para os casos:
   - BTFNT: Melhora de **71,80%**.
 
 Vemos claramente que a estratégia de branch dinâmica funciona muito melhor que a estratégia simples, mas a simples também funciona bem em alguns casos, chegando até 65% de melhora no caso do fft.
+
 Analisando cada um dos programas vemos que: tanto o Sha quanto o Susan obtiveram uma melhora mínima, em torno de 10%, utilizando o *Always Not Taken* mas chegaram há quase 99% na melhora do desempenho no caso do *BTFNT*. Isso provavelmente é explicado por um alto indice de loops durante a execução desses programas, o que faz com que a *BTFNT* se comporte melhor, já que ela se benificia desses casos (loops são resultados de vários jumps para trás (backwards) que são tratados como *taken* nesta predição). O Qsort teve uma melhor significativa com o uso do *Always Not Taken*, em torno de 25%, mas teve um resultado também muito bom com o *BTFNT*, uma melhora de 70%. O FFT apresentou também um comportamento diferente, com uma melhora muito boa já com a utilização do *Always Not Taken*, 65%, e um resultado próximo com o *BTFNT*, em torno de 75%.
 
 Dessa forma, vemos que a *BTFNT* foi a que obteve um melhor desempenho entre elas, chegando a melhora de até impressinantes 99,42%, no caso do Sha, em relação a execução sem branch predictor. 
@@ -278,6 +279,7 @@ ps1: para calcular o tempo de execução, consideramos um processador com frequ�
 
 
 ##Referências
-http://www.7-cpu.com/cpu/Octeon2.html
+[http://www.7-cpu.com/cpu/Octeon2.html]()
 
+[http://www.7-cpu.com/cpu/Mips4K.html]()
 
