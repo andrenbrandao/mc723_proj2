@@ -20,10 +20,14 @@
 
 ## Medidas de Desempenho:
 Medimos o impacto, no desempenho de um processador, de diferentes características através das seguintes métricas:
+
  - **Tamanho do Pipeline:** Calculo do número de ciclos executados para diferentes tamanhos de pipeline (sem pipeline, 5 estagios, 7 estagio e 13 estagios)
+
  - **Processador escalar vs. Superescalar:**
     - Contagem do número total de ciclos executados em cada processador;
     - Contagem do números de ciclos de stalls para cada processador.
+
+    
  - **Hazard de Dados e Controle:**
     - Identificação dos estágios em que ocorrem Hazards;
     - Hazard de Dados:
@@ -43,7 +47,7 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     - % de Read miss
     - % de Write miss
 
- Para realizar as medidas foram necessarios fixar parâmetros. OS parametros que foram fixados estarão decritos em cada seção.
+ Para realizar as medidas foram necessarios fixar parâmetros. Os parâmetros que foram fixados estão decritos em cada seção.
 ## Resultados Obtidos:
 ### Tamanho do Pipeline
 - Parâmetros Fixos:
@@ -58,7 +62,12 @@ Medimos o impacto, no desempenho de um processador, de diferentes característic
     | **Sha** |391062479|137085619|137085621|137085627|
     | **FFT** |1878273331|539993328|539993330|539993336|
 
-- Análise:
+*ps: para o caso sem pipeline, consideramos os CPIS médios do laboratório 3.*
+
+*ps2: como foi executado em ocasiões diferentes(por pessoas diferentes), não trata do mesmo número de instruções da próxima seção*
+
+- **Análise:**
+
 Vemos claramente que entre os processadores com pipeline, não há muito diferença se não considerarmos os hazards. Já para a versão com pipeline para a sem pipeline, temos uma média de melhora de aproximadamente **70%** na performance dos aplicativos.
 
 ### Processadorescalar vs Superescalar:
@@ -103,7 +112,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 - Parâmetros Fixos:
     - Tamanho da pipeline: 5 estágios;
     - Processador Escalar;
- - Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
+- Contagem do número de ciclos de stalls gerados quando o branch não segue a previsão:
 
     | |**BTFNT**|**Always Not Taken**|**Sem Branch Predictor**|
     |---|---|---|---|
@@ -118,6 +127,7 @@ Vemos claramente que entre os processadores com pipeline, não há muito diferen
 Na média, obtemos uma melhora de aproximadamente para os casos:
   - Always Not Taken:  Melhora de **26,40%**.
   - BTFNT: Melhora de **71,80%**.
+
 Vemos claramente que a estratégia de branch dinâmica funciona muito melhor que a estratégia simples, mas a simples também funciona bem em alguns casos, chegando até 65% de melhora no caso do fft.
 
 ### Cache:
@@ -196,7 +206,7 @@ Vemos claramente que a estratégia de branch dinâmica funciona muito melhor que
         |QSort |158793|56.91%|43.09%|12.10%|20.23%|1.37%|
         |Susan |202862|97.86%|2.14%|1.57%|1.60%|0%|
         |Sha|749613|99.46%|0.54%|57.90%|58.13%|14.89%|
-        |FFT|269084|95.68%|4.32%|54.75%|57.13%|1.94%|
+        |FFT|269084|95.68%|4.32%|54.75%|57.13%|1.94%|        
 
 - **Analise**: Dos resultados obtidos é possível perceber que, em geral, alterações no tamanho da cache 1, influenciam o número de fetchs e % de misses da cache 2, da seguinte maneira:
     - Aumento da cache 1: causa diminuição no número de fetchs e aumento na % de misses da cache 2.
@@ -211,3 +221,53 @@ Vemos claramente que a estratégia de branch dinâmica funciona muito melhor que
 
 - **Configuração escolhida**: C3: L1 - Size: 128K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.
     - Assim como no exercício 2, as configurações com o maior tamanho de cache, em geral, apresentam um resultado melhor. Porém é interessante ressaltar que a configuração C2 (L1 - Size: 64K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B.) possuiu um desempenho muito próximo ao apresentado pela C3, inclusive com a diminuição das taxas de miss no cache 2, de acordo com o que foi ressaltado na sessão de analise.
+
+
+#### Penalidade por hit/miss
+Consideramos a penalidade por hit/miss as seguintes:
+
+* Acesso à L1 -> 5 ciclos de latência
+* Acesso à L2 -> 28 ciclos de latência
+* L1 Miss -> 28 ciclos
+* L2 Miss -> 100 ciclos
+
+
+Com isso, podemos refinar nossa tabela de superescalar/escalar, somando também as bolhas relativas à acesso a memória.
+
+Multiplicamos a quantidade de misses e a quantidade de instruções que lê na memória/cache e somamos a quantidade de penalidade associada aos stalls.
+
+| |**Stalls devido ao acesso à memória**|
+|---|---|
+|**QSort** | 85787507 |
+|**Susan** |391533116|
+|**Sha**|210253067|
+|**FFT**|676809885|
+
+
+
+##Conclusão
+
+Com esses dados em mãos, montamos a seguinte tabela que resume as nossas melhores configurações e experimentos:
+
+||**Escalar**|**Pipeline de 5 estágios**|**BTFNT**|**L1 - Size: 128K, Block Size: 128B; L2 - Size: 2048K, Block Size: 128B** |
+|---|---|---|---|---|
+| |**QSort**|**Susan**|**Sha**|**FFT**|
+| **Ciclos de instruções na pipeline**| 29335439 | 345070391 | 132781865 | 504099557 |
+| **Hazard de Dados(ciclos)**| 4580475 | 25423161 | 3325419 | 16038769 |
+| **Hazard de Controle(com branch predictor/ciclos)**| 797948 | 453558 | 34439 | 15131438 |
+| **Acesso à memória(ciclos)**| 85787507 | 391533116 | 210253067 | 676809885 |
+| **Total de Ciclos**| 206288876 | 1154013342 | 556647857 | 1888889534 |
+| **Tempo de Execução sem acréscimos\*(s)**| 0.1955695933	| 2.300469273 |	0.8852124333 | 3.360663713 |
+| **Tempo de Execução TOTAL(s)**| 1.375259173	| 7.69342228 |	3.710985713 | 5.112672827 |
+
+
+ps1: para calcular o tempo de execução, consideramos um processador com frequência **150 MHz**, frequencia real de um processador mips com 5 estágios na pipeline(MIPS 4K).
+
+*\*:considerando apenas: (instruções+5=ciclos)/frequência.*
+
+
+
+##Referências
+http://www.7-cpu.com/cpu/Octeon2.html
+
+
